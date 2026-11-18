@@ -20,9 +20,10 @@
       <div class="home-footer"><span>GTA VI INSPIRED • REAL-TIME SCENE CONTROL</span><span>1920 × 1080 • TRANSPARENT OBS SOURCE</span></div>
     </section>
     <section id="studioView" class="studio-view" hidden>
-      <div class="studio-top"><div><div class="overline">LIVE SCENE WORKSPACE</div><h1>Scene <span class="gradient-text">Control.</span></h1><div class="scene-name-row"><span class="green-dot"></span><span id="sceneNameText">GTA VI Stream</span><button class="tiny-btn" id="renameBtn" title="Rename scene">✎</button></div></div><div class="share-section"><div class="share-label">YOUR SCENE CODE <small>Anyone with this code can control the scene</small></div><div class="share-code"><strong id="sceneCodeText">------ ------</strong><button id="copyCodeBtn" class="copy-btn">⧉ COPY</button></div><div class="share-actions"><button class="ghost-btn" id="copyObsBtn">⧉ Copy OBS link</button><button class="ghost-btn" id="openObsBtn">↗ Open overlay</button><button class="ghost-btn" id="copyControlBtn">⧉ Control link</button></div></div></div>
+      <div class="studio-top"><div><div class="overline">LIVE SCENE WORKSPACE</div><h1>Scene <span class="gradient-text">Control.</span></h1><div class="scene-name-row"><span class="green-dot"></span><span id="sceneNameText">GTA VI Stream</span><button class="tiny-btn" id="renameBtn" title="Rename scene">✎</button></div></div><div class="share-section"><div class="share-label">YOUR SCENE CODE <small>Share the scene code + your private mod code to grant control</small></div><div class="share-code"><strong id="sceneCodeText">------ ------</strong><button id="copyCodeBtn" class="copy-btn">⧉ COPY</button></div><div class="share-actions"><button class="ghost-btn" id="copyObsBtn">⧉ Copy OBS link</button><button class="ghost-btn" id="openObsBtn">↗ Open overlay</button><button class="ghost-btn" id="copyControlBtn">⧉ Control link</button></div></div></div>
       <div class="studio-grid">
-        <section class="preview-area glass"><div class="section-bar"><div><div class="overline">LIVE CANVAS</div><h2>Scene Preview <span class="pill">1920 × 1080</span></h2></div><span class="drag-hint">✥ DRAG TO REPOSITION</span></div>
+        <section class="preview-area glass"><div class="section-bar"><div><div class="overline">LIVE CANVAS</div><h2>Scene Preview <span class="pill">1920 × 1080</span></h2></div>
+          <div class="preview-zoom-tools"><span class="drag-hint">DRAG TO MOVE • HANDLE TO RESIZE</span><button id="zoomOutBtn" type="button" aria-label="Make overlay smaller">−</button><strong id="zoomPercentage">100%</strong><button id="zoomInBtn" type="button" aria-label="Make overlay larger">+</button></div></div>
         <div class="preview-viewport" id="previewViewport"><div class="preview-stage" id="previewStage"><div class="stage-top-line">SAFE AREA <span>1920 × 1080</span></div><div class="stage-center-mark">VI</div><div class="stage-corner tl"></div><div class="stage-corner tr"></div><div class="stage-corner bl"></div><div class="stage-corner br"></div></div></div>
         <div class="preview-footer"><span class="green-dot"></span><span id="canvasStatus">Connected to cloud</span><span class="preview-spacer"></span><span id="positionReadout">X: 1240 &nbsp; Y: 38</span></div>
         <div class="quick-controls"><span>QUICK ACTIONS</span><button data-quick="missions" data-delta="1">+ Mission</button><button data-quick="deaths" data-delta="1">+ Death</button><button data-quick="day" data-delta="1">+ Day</button><button data-quick="clock" data-delta="toggle" id="quickToggle">▶ Timer</button></div>
@@ -38,7 +39,7 @@
           <div class="tab-panel" id="clockPanel" hidden><p class="panel-intro">Timer runs in the cloud: no browser needs to stay open.</p><div class="timer-readout"><div>PLAY TIME</div><strong id="timerLarge">0:00:00</strong><span id="timerStateText">PAUSED</span></div><button class="primary-btn block" id="timerToggleBtn">▶ START TIMER</button><div class="time-field"><label for="totalInput">TOTAL PLAY TIME (H:MM:SS)</label><div><input id="totalInput" placeholder="0:00:00"><button id="setTotalBtn">SET</button></div></div><div class="time-field"><label for="todayInput">TODAY'S TIME (H:MM:SS)</label><div><input id="todayInput" placeholder="0:00:00"><button id="setTodayBtn">SET</button></div></div><button class="danger-outline" id="resetTodayBtn">↻ Reset today's timer</button><button class="danger-outline" id="resetAllBtn">↻ Reset all timers and counters</button></div>
           <div class="tab-panel" id="lookPanel" hidden><p class="panel-intro">Customize the 1920 × 1080 overlay without editing code.</p>
             <div class="field-row"><label for="xInput">X POSITION</label><input type="number" id="xInput" min="0" max="1900"></div><div class="field-row"><label for="yInput">Y POSITION</label><input type="number" id="yInput" min="0" max="1040"></div>
-            <div class="range-row"><label for="scaleRange">HUD SIZE <strong id="scaleValue">100%</strong></label><input type="range" id="scaleRange" min="35" max="240" value="100"></div><div class="range-row"><label for="opacityRange">OPACITY <strong id="opacityValue">100%</strong></label><input type="range" id="opacityRange" min="10" max="100" value="100"></div>
+            <div class="range-row"><label for="scaleRange">OVERLAY SIZE IN OBS <strong id="scaleValue">100%</strong></label><input type="range" id="scaleRange" min="25" max="400" step="5" value="100"><small class="range-help">Adjust here, use the +/- buttons, or drag the neon corner handle on the preview.</small></div><div class="range-row"><label for="opacityRange">OPACITY <strong id="opacityValue">100%</strong></label><input type="range" id="opacityRange" min="10" max="100" value="100"></div>
             <div class="subheading">VISIBLE ELEMENTS</div><div class="toggle-grid"><label><input type="checkbox" data-visibility="day" checked><span>Day</span></label><label><input type="checkbox" data-visibility="timer" checked><span>Timer</span></label><label><input type="checkbox" data-visibility="missions" checked><span>Missions</span></label><label><input type="checkbox" data-visibility="deaths" checked><span>Deaths</span></label></div>
             <div class="subheading">NEON COLORS</div><div class="colors-grid"><label>Pink<input type="color" data-color="pink" value="#ff2a85"></label><label>Cyan<input type="color" data-color="cyan" value="#00f5d4"></label><label>Amber<input type="color" data-color="amber" value="#ff9e00"></label><label>Red<input type="color" data-color="red" value="#ff4d6d"></label></div>
             <div class="subheading">HEBREW OVERLAY LABELS</div><div class="labels-grid"><label>Day<input type="text" data-label="day" maxlength="24"></label><label>Timer<input type="text" data-label="time" maxlength="24"></label><label>Missions<input type="text" data-label="missions" maxlength="24"></label><label>Deaths<input type="text" data-label="deaths" maxlength="24"></label></div>
@@ -49,6 +50,26 @@
       <div class="tip-banner"><b>OBS TIP:</b> Add a Browser Source with the copied OBS link. Set its width to <strong>1920</strong> and height to <strong>1080</strong>. The background stays transparent.</div>
     </section>
   </main>
+  
+  <div id="accessModal" class="access-modal" hidden>
+    <div id="accessBackdrop" class="access-backdrop"></div>
+    <section class="access-dialog glass" role="dialog" aria-modal="true" aria-labelledby="modModalTitle">
+      <button class="access-close" id="accessClose" type="button" aria-label="Close">×</button>
+      <div class="access-symbol">✦</div>
+      <div class="overline">LEONIDA • MODERATOR SECURITY</div>
+      <h2 id="modModalTitle">CREATE MOD CODE</h2>
+      <p id="modModalDescription">Choose your private moderator code. Anyone who wants to control this scene will need it.</p>
+      <form id="modForm">
+        <label for="modPin">MODERATOR CODE</label>
+        <input id="modPin" type="password" placeholder="Enter your private code" minlength="6" maxlength="64" autocomplete="new-password" required>
+        <div id="modConfirmWrap"><label for="modConfirm">CONFIRM MODERATOR CODE</label><input id="modConfirm" type="password" placeholder="Repeat your moderator code" minlength="6" maxlength="64" autocomplete="new-password"></div>
+        <label class="show-mod-code"><input id="showModPin" type="checkbox"> Show code</label>
+        <p class="mod-modal-error" id="modError" role="alert"></p>
+        <button id="modSubmitBtn" class="primary-btn block" type="submit">CREATE SCENE & SAVE CODE ↗</button>
+      </form>
+      <p class="mod-security-tip">Your moderator code is different from the scene code. Do not share it with viewers.</p>
+    </section>
+  </div>
   <div class="toast" id="toast" role="status"></div>
   <script type="module" src="studio.js?v=20261118-configured"></script>
 </body></html>
