@@ -1,4 +1,4 @@
-import { cloudReady, initCloud, normalizeCode, watchScene } from './cloud.js';
+import { cloudReady, initCloud, normalizeCode, watchScene } from './cloud.js?v=20261118-configured';
 import { makeHud } from './hud.js';
 const stage=document.getElementById('stage');
 const diagnostic=document.getElementById('diagnostic');
