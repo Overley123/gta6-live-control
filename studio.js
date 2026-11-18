@@ -1,4 +1,4 @@
-import {cloudReady, initCloud, normalizeCode, humanCode, createScene, sceneExists, watchScene, patchScene, stepCounter, getClockValues, replaceClock, israelToday, initialScene} from './cloud.js';
+import {cloudReady, initCloud, normalizeCode, humanCode, createScene, sceneExists, watchScene, patchScene, stepCounter, getClockValues, replaceClock, israelToday, initialScene} from './cloud.js?v=20261118-configured';
 import {makeHud} from './hud.js';
 const $=id=>document.getElementById(id);
 const home=$('homeView'), studio=$('studioView');
