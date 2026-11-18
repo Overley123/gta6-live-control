@@ -1,5 +1,5 @@
-import {cloudReady, initCloud, normalizeCode, humanCode, createScene, sceneInfo, authorizeModerator, setLegacyModerator, watchScene, patchScene, stepCounter, getClockValues, replaceClock, israelToday, initialScene} from './cloud.js?v=20261118-configured';
-import {makeHud} from './hud.js';
+import {cloudReady, initCloud, normalizeCode, humanCode, createScene, sceneInfo, authorizeModerator, setLegacyModerator, watchScene, patchScene, stepCounter, getClockValues, replaceClock, israelToday, initialScene} from './cloud.js?v=mods2';
+import {makeHud} from './hud.js?v=mods2';
 const $=id=>document.getElementById(id);
 const home=$('homeView'), studio=$('studioView');
 let code=null, scene=null, unsubscribe=()=>{}, hud=null, stageScale=1, drag=null, toastTimer, pendingStyleTimer;
