@@ -59,14 +59,14 @@ $('modForm').onsubmit=async ev=>{
 $('homeBtn').onclick=()=>{unsubscribe();unsubscribe=()=>{};if(hud){hud.destroy();hud=null;}code=null;scene=null;studio.hidden=true;home.hidden=false;$('homeBtn').hidden=true;history.replaceState(null,'','./index.html');};
 function syncStageScale(){const viewport=$('previewViewport');stageScale=viewport.clientWidth/1920;$('previewStage').style.transform=`scale(${stageScale})`;}
 window.addEventListener('resize',syncStageScale);
-async function enterStudio(nextCode){unsubscribe();code=nextCode;scene=null;home.hidden=true;studio.hidden=false;$('homeBtn').hidden=false;$('sceneCodeText').textContent=humanCode(code);syncStageScale();if(hud)hud.destroy();hud=makeHud($('previewStage'));hud.node.addEventListener('pointerdown',startDrag);
+async function enterStudio(nextCode){unsubscribe();code=nextCode;scene=null;home.hidden=true;studio.hidden=false;$('homeBtn').hidden=false;$('sceneCodeText').textContent=humanCode(code);syncStageScale();if(hud)hud.destroy();hud=makeHud($('previewStage'));hud.node.addEventListener('pointerdown',startDrag);const grip=document.createElement('button');grip.className='hud-resize-handle';grip.type='button';grip.textContent='↘';grip.title='Drag to resize overlay';grip.setAttribute('aria-label','Drag to resize overlay');grip.addEventListener('pointerdown',startResize);hud.node.appendChild(grip);
  unsubscribe=watchScene(code,(snapshot)=>{if(!snapshot){toast('This scene no longer exists.',true);return;}const initial=!scene;scene=snapshot;hud.update(scene);updateReadouts();if(initial)updateForm();},fail);
 }
 function updateReadouts(){if(!scene)return;const st=scene.stats||{};const layout=scene.layout||{};const time=getClockValues(scene);$('sceneNameText').textContent=scene.name||'GTA VI Stream';$('positionReadout').textContent=`X: ${Math.round(layout.x||0)}   Y: ${Math.round(layout.y||0)}`;$('timerLarge').textContent=fmt(time.total);$('timerStateText').textContent=time.running?'RUNNING':'PAUSED';$('timerToggleBtn').textContent=time.running?'Ⅱ PAUSE TIMER':'▶ START TIMER';$('quickToggle').textContent=time.running?'Ⅱ Pause':'▶ Timer';$('canvasStatus').textContent='Live changes synced';
  for(const k of ['day','missions','deaths']){const el=document.querySelector(`[data-stat="${k}"]`);if(document.activeElement!==el)el.value=st[k]??0;}
  if(document.activeElement!==$('xInput'))$('xInput').value=Math.round(layout.x??1240);
  if(document.activeElement!==$('yInput'))$('yInput').value=Math.round(layout.y??38);
- $('scaleRange').value=Math.round((layout.scale??1)*100);$('scaleValue').textContent=`${$('scaleRange').value}%`;
+ $('scaleRange').value=Math.round((layout.scale??1)*100);$('scaleValue').textContent=`${$('scaleRange').value}%`;$('zoomPercentage').textContent=`${$('scaleRange').value}%`;
  $('opacityRange').value=Math.round((layout.opacity??1)*100);$('opacityValue').textContent=`${$('opacityRange').value}%`;
  for(const element of document.querySelectorAll('[data-visibility]'))element.checked=scene.visibility?.[element.dataset.visibility]!==false;
  for(const element of document.querySelectorAll('[data-color]')) if(document.activeElement!==element)element.value=scene.colors?.[element.dataset.color]??'#ffffff';
@@ -94,12 +94,29 @@ $('resetAllBtn').onclick=async()=>{if(!scene||!confirm('Reset all counters AND t
 function updateStyle(path,value){if(!scene)return;const [group,key]=path.split('/');scene={...scene,[group]:{...(scene[group]||{}),[key]:value}};hud.update(scene);updateReadouts();pendingStyles[path]=value;clearTimeout(pendingStyleTimer);pendingStyleTimer=setTimeout(async()=>{const changes={...pendingStyles};pendingStyles={};try{await patchScene(code,changes);}catch(e){fail(e);}},180);}
 for(const id of ['xInput','yInput'])$(id).addEventListener('change',ev=>{if(!scene)return;const path='layout/'+(id==='xInput'?'x':'y');updateStyle(path,digits(ev.target.value,0,id==='xInput'?1900:1040));});
 $('scaleRange').oninput=ev=>updateStyle('layout/scale',Number(ev.target.value)/100);
+function zoom(delta){if(!scene)return;const current=Number(scene.layout?.scale)||1;const value=Math.min(4,Math.max(.25,Math.round((current+delta)*20)/20));updateStyle('layout/scale',value);}
+$('zoomOutBtn').onclick=()=>zoom(-.1);
+$('zoomInBtn').onclick=()=>zoom(.1);
 $('opacityRange').oninput=ev=>updateStyle('layout/opacity',Number(ev.target.value)/100);
 for(const el of document.querySelectorAll('[data-visibility]'))el.onchange=()=>updateStyle('visibility/'+el.dataset.visibility,el.checked);
 for(const el of document.querySelectorAll('[data-color]'))el.oninput=()=>updateStyle('colors/'+el.dataset.color,el.value);
 for(const el of document.querySelectorAll('input[data-label]'))el.onchange=()=>updateStyle('labels/'+el.dataset.label,el.value.trim().slice(0,24));
 $('resetStyleBtn').onclick=async()=>{if(!scene||!confirm('Restore overlay appearance and position?'))return;const starter=initialScene();try{await patchScene(code,{layout:starter.layout,visibility:starter.visibility,colors:starter.colors,labels:starter.labels});toast('Appearance reset');}catch(e){fail(e);}};
-function startDrag(e){if(!scene||e.button!==0)return;e.preventDefault();drag={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,x:scene.layout?.x||0,y:scene.layout?.y||0};hud.node.setPointerCapture(e.pointerId);hud.node.addEventListener('pointermove',moveDrag);hud.node.addEventListener('pointerup',endDrag,{once:true});hud.node.addEventListener('pointercancel',endDrag,{once:true});}
+let resizing=null;
+function startResize(e){
+ if(!scene||e.button!==0)return;
+ e.preventDefault();e.stopPropagation();
+ const handle=e.currentTarget;
+ resizing={pointerId:e.pointerId,startX:e.clientX,startScale:Number(scene.layout?.scale)||1,baseWidth:Math.max(1,hud.node.offsetWidth)};
+ handle.setPointerCapture(e.pointerId);handle.addEventListener('pointermove',moveResize);handle.addEventListener('pointerup',endResize,{once:true});handle.addEventListener('pointercancel',endResize,{once:true});
+}
+function moveResize(e){
+ if(!resizing||e.pointerId!==resizing.pointerId||!scene)return;
+ const value=Math.round(Math.max(.25,Math.min(4,resizing.startScale+(e.clientX-resizing.startX)/(stageScale*resizing.baseWidth)))*100)/100;
+ scene={...scene,layout:{...scene.layout,scale:value}};hud.update(scene);updateReadouts();
+}
+async function endResize(e){if(!resizing||e.pointerId!==resizing.pointerId)return;e.currentTarget.removeEventListener('pointermove',moveResize);resizing=null;try{await patchScene(code,{'layout/scale':scene.layout.scale});}catch(err){fail(err);}}
+function startDrag(e){if(e.target.closest('.hud-resize-handle'))return;if(!scene||e.button!==0)return;e.preventDefault();drag={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,x:scene.layout?.x||0,y:scene.layout?.y||0};hud.node.setPointerCapture(e.pointerId);hud.node.addEventListener('pointermove',moveDrag);hud.node.addEventListener('pointerup',endDrag,{once:true});hud.node.addEventListener('pointercancel',endDrag,{once:true});}
 function moveDrag(e){if(!drag||e.pointerId!==drag.pointerId||!scene)return;const x=digits(drag.x+(e.clientX-drag.startX)/stageScale,0,1900),y=digits(drag.y+(e.clientY-drag.startY)/stageScale,0,1040);scene={...scene,layout:{...scene.layout,x,y}};hud.update(scene);$('positionReadout').textContent=`X: ${x}   Y: ${y}`;}
 async function endDrag(e){if(!drag||e.pointerId!==drag.pointerId)return;hud.node.removeEventListener('pointermove',moveDrag);drag=null;try{await patchScene(code,{'layout/x':scene.layout.x,'layout/y':scene.layout.y});}catch(err){fail(err);}}
 setInterval(()=>{if(scene){const c=getClockValues(scene);$('timerLarge').textContent=fmt(c.total);}},1000);
