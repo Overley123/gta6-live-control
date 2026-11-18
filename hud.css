@@ -1,0 +1,25 @@
+:root{--pink:#ff2a85;--cyan:#00f5d4;--amber:#ff9e00;--red:#ff4d6d}
+.leonida-hud{display:inline-flex;flex-direction:column;position:absolute;top:0;left:0;background:transparent;padding:14px 12px 10px;min-width:max-content;direction:rtl;font-family:'Heebo',Arial,sans-serif;user-select:none;opacity:var(--hud-opacity,1);transform:scale(var(--hud-scale,1));transform-origin:top left;filter:drop-shadow(0 3px 6px #000a)}
+.leonida-hud::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--amber));box-shadow:0 0 14px #ff2a85ad,0 0 22px #00f5d473}
+.leonida-hud .stats-row{display:flex;align-items:center;gap:22px}
+.leonida-hud .day-badge,.leonida-hud .timer-block,.leonida-hud .stat-block{display:flex;flex-direction:column;justify-content:center}
+.leonida-hud .day-badge{align-items:center;padding:2px 6px}
+.leonida-hud .day-title,.leonida-hud .top-label{font-size:13px;font-weight:900;line-height:1.5;white-space:nowrap}
+.leonida-hud .day-title{color:var(--amber);letter-spacing:1px;text-shadow:0 2px 6px #000,0 0 10px #ff9e00a8}
+.leonida-hud .top-label{color:var(--pink);text-shadow:0 2px 6px #000,0 0 10px #ff2a85a8}
+.leonida-hud .death-label{color:var(--red);text-shadow:0 2px 6px #000,0 0 10px #ff4d6da8}
+.leonida-hud .time-label{color:var(--cyan);text-shadow:0 2px 6px #000,0 0 10px #00f5d4a8;display:flex;gap:7px;align-items:center}
+.leonida-hud .time-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:2px}
+.leonida-hud .live-dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--cyan);box-shadow:0 0 9px var(--cyan);animation:leonida-pulse 1.5s infinite}
+.leonida-hud.is-paused .live-dot{background:var(--red);animation:none;box-shadow:none}
+.leonida-hud .today-pill{font-size:12px;color:#fff;font-weight:800;text-shadow:0 2px 6px #000}
+.leonida-hud .today-pill span{font-family:'Rubik',Arial,sans-serif;direction:ltr;display:inline-block}
+.leonida-hud .big-num,.leonida-hud .total-clock{font-family:'Rubik',Arial,sans-serif;font-style:italic;font-weight:900;font-size:36px;line-height:1.05;color:#fff;text-shadow:0 3px 10px #000,0 0 6px #000;white-space:nowrap;font-variant-numeric:tabular-nums}
+.leonida-hud .day-num{text-shadow:0 3px 8px #000,0 0 14px #ff2a85d9}
+.leonida-hud.is-paused .total-clock{color:#ff8fa3}
+.leonida-hud .total-clock{direction:ltr;text-align:right;letter-spacing:1px}
+.leonida-hud .sep{height:44px;width:2px;background:linear-gradient(transparent,#ffffff78,transparent);box-shadow:0 0 8px #000}
+.leonida-hud .stat-number{display:flex;align-items:baseline;gap:6px}
+.leonida-hud .stat-sub{font-size:13px;font-weight:800;color:#ffffffe5;text-shadow:0 2px 6px #000}
+.leonida-hud .is-hidden{display:none!important}
+@keyframes leonida-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.36;transform:scale(.8)}}
