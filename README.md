@@ -1,3 +1,24 @@
+
+## Moderator codes — required after the November update
+
+The home page remains public. When you press **Create New Scene**, the center-screen **CREATE MOD CODE** dialog asks you to choose a private moderator code (6–64 characters) and confirm it. The site generates a separate 12-character *scene code*. Users enter the scene code and then the private **MOD CODE** to unlock controls. The OBS overlay uses only the scene code and cannot gain write access.
+
+### REQUIRED one-time Firebase setup (done by project owner, not by moderators)
+
+1. Open **Firebase Console → Build → Authentication → Get started → Sign-in method**.
+2. Enable the **Anonymous** sign-in provider, then Save. This is needed so Firebase can identify each moderator's authorized session without making visitors create an account.
+3. Open **Firebase Console → Realtime Database → Rules**.
+4. Replace the full live rules with the updated contents of [database.rules.json](./database.rules.json). **Publish** them. The new rules authorize writes only after a successful secret-code check. A file update on GitHub does *not* automatically update Firebase's live rules.
+5. Refresh the live GitHub Pages site (Ctrl + Shift + R) and create a new scene.
+
+**Important:** Never put the moderator code in the OBS URL, public messages, a JavaScript config file, or GitHub. Firebase stores a scene-specific SHA-256 digest at a non-readable database path and validates secret-code attempts in its Rules. This is code-based access, not a full account system; choose a strong unpredictable code, and consider Firebase App Check / throttling if you share the site widely.
+
+**Existing scenes:** On first joining an older scene, the site will ask you to **CREATE MOD CODE** for that scene and secure it. Anyone who already knows that older scene's identifier could perform this first-time upgrade, so the original scene creator should do it promptly. Existing scene data and counters are preserved.
+
+**Overlay resizing:** In **Scene Preview**, drag the cyan ↘ corner handle; use the +/− buttons next to the preview or the **STYLE → OVERLAY SIZE IN OBS** slider. Range: 25%–400%. The size is saved to Firebase and applied to the live 1920×1080 OBS overlay. You can drag the overlay to reposition it after making it bigger.
+
+
+---
 # LEONIDA / GTA VI Cloud Control Studio
 
 Two web pages, hosted on GitHub Pages and backed by Firebase Realtime Database:
