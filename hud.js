@@ -1,4 +1,4 @@
-import { getClockValues } from './cloud.js';
+import { getClockValues } from './cloud.js?v=mods2';
 const dflt = { stats:{day:1,missions:0,deaths:0}, visibility:{day:true,timer:true,missions:true,deaths:true}, layout:{x:1240,y:38,scale:1,opacity:1}, colors:{pink:'#ff2a85',cyan:'#00f5d4',amber:'#ff9e00',red:'#ff4d6d'}, labels:{day:'יום',time:'זמן משחק',missions:'משימות',deaths:'מוות'} };
 export function makeHud(host) {
   const node=document.createElement('div'); node.className='leonida-hud';
