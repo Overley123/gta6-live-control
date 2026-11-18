@@ -23,7 +23,7 @@ export function makeHud(host) {
     const labels={...dflt.labels,...scene.labels};
     node.style.left=`${Math.min(1900, Math.max(0, Number(layout.x)||0))}px`;
     node.style.top=`${Math.min(1040, Math.max(0, Number(layout.y)||0))}px`;
-    node.style.setProperty('--hud-scale', Math.max(.35,Math.min(2.4,Number(layout.scale)||1)));
+    node.style.setProperty('--hud-scale', Math.max(.25,Math.min(4,Number(layout.scale)||1)));
     node.style.setProperty('--hud-opacity', Math.max(.1,Math.min(1, Number(layout.opacity)||1)));
     for(const color of ['pink','cyan','amber','red']) if(/^#[0-9a-fA-F]{6}$/.test(colors[color])) node.style.setProperty('--'+color,colors[color]);
     for(const key of ['day','timer','missions','deaths']) one(`[data-block="${key}"]`).classList.toggle('is-hidden',visibility[key] === false);
