@@ -1,4 +1,4 @@
-import {cloudReady, initCloud, normalizeCode, humanCode, createScene, sceneExists, watchScene, patchScene, stepCounter, getClockValues, replaceClock, israelToday, initialScene} from './cloud.js?v=20261118-configured';
+import {cloudReady, initCloud, normalizeCode, humanCode, createScene, sceneInfo, authorizeModerator, setLegacyModerator, watchScene, patchScene, stepCounter, getClockValues, replaceClock, israelToday, initialScene} from './cloud.js?v=20261118-configured';
 import {makeHud} from './hud.js';
 const $=id=>document.getElementById(id);
 const home=$('homeView'), studio=$('studioView');
@@ -14,8 +14,48 @@ function controlURL(){return new URL(`index.html?scene=${encodeURIComponent(code
 async function copy(value){try{await navigator.clipboard.writeText(value);toast('Copied to clipboard');}catch(e){const input=document.createElement('textarea');input.value=value;document.body.appendChild(input);input.select();document.execCommand('copy');input.remove();toast('Copied to clipboard');}}
 function requireReady(){if(!cloudReady){toast('Connect Firebase Realtime Database first. See README.md.',true);return false;}return true;}
 if(!cloudReady){status('Cloud setup needed',false);$('setupNotice').hidden=false;}else{try{initCloud();status('Cloud configured',true);}catch(e){status('Connection error',false);fail(e);}}
-$('createBtn').onclick=async()=>{if(!requireReady())return;const b=$('createBtn');b.disabled=true;b.textContent='CREATING...';try{const created=await createScene();await enterStudio(created);history.replaceState(null,'',controlURL());toast('Scene created. Share the code to let others control it!');}catch(e){fail(e);}finally{b.disabled=false;b.innerHTML='CREATE NEW SCENE <span>↗</span>';}};
-$('joinForm').onsubmit=async ev=>{ev.preventDefault();if(!requireReady())return;const wanted=normalizeCode($('joinCode').value);if(wanted.length!==12){toast('Please enter a valid 12-character scene code.',true);return;}try{if(!(await sceneExists(wanted))){toast('Scene not found. Check the code.',true);return;}await enterStudio(wanted);history.replaceState(null,'',controlURL());toast('You joined the scene!');}catch(e){fail(e);}};
+let modalMode='create',modalScene=null,modalBusy=false;
+function openModModal(mode,sceneCode=null){
+  modalMode=mode;modalScene=sceneCode;$('modForm').reset();$('modError').textContent='';$('accessModal').hidden=false;
+  const creating=mode!=='join';
+  $('modConfirmWrap').hidden=!creating;$('modConfirm').required=creating;
+  $('modModalTitle').textContent=creating?'CREATE MOD CODE':'ENTER MOD CODE';
+  $('modModalDescription').textContent=mode==='create'?'Choose your private mod code. Anyone joining the control panel must enter it.':mode==='legacy'?'Secure this older scene by choosing a private mod code now.':'Enter the mod code selected by the creator of this scene.';
+  $('modSubmitBtn').textContent=mode==='create'?'CREATE SCENE & SAVE CODE ↗':mode==='legacy'?'SECURE SCENE ↗':'UNLOCK SCENE →';
+  $('modPin').setAttribute('autocomplete',creating?'new-password':'current-password');
+  $('modPin').placeholder=creating?'Choose a code (6–64 characters)':'Enter moderator code';
+  setTimeout(()=>$('modPin').focus(),30);
+}
+function closeModModal(){if(modalBusy)return;$('accessModal').hidden=true;$('modForm').reset();$('modError').textContent='';}
+$('accessClose').onclick=closeModModal;
+$('accessBackdrop').onclick=closeModModal;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('accessModal').hidden)closeModModal();});
+$('showModPin').onchange=()=>{$('modPin').type=$('showModPin').checked?'text':'password';$('modConfirm').type=$('showModPin').checked?'text':'password';};
+$('createBtn').onclick=()=>{if(requireReady())openModModal('create');};
+async function promptForScene(wanted){
+  const info=await sceneInfo(wanted);
+  if(!info.exists){toast('Scene not found. Check the code.',true);return;}
+  openModModal(info.modProtected?'join':'legacy',wanted);
+}
+$('joinForm').onsubmit=async ev=>{ev.preventDefault();if(!requireReady())return;const wanted=normalizeCode($('joinCode').value);if(wanted.length!==12){toast('Please enter a valid 12-character scene code.',true);return;}try{await promptForScene(wanted);}catch(e){fail(e);}};
+$('modForm').onsubmit=async ev=>{
+ ev.preventDefault();if(modalBusy)return;
+ const pin=$('modPin').value.trim(),creating=modalMode!=='join';
+ if(pin.length<6||pin.length>64){$('modError').textContent='Use 6–64 characters for your mod code.';return;}
+ if(creating&&pin!==$('modConfirm').value.trim()){$('modError').textContent='The codes do not match.';return;}
+ modalBusy=true;const button=$('modSubmitBtn'),original=button.textContent;button.disabled=true;button.textContent='CONNECTING...';$('modError').textContent='';
+ try {
+   let nextCode=modalScene;
+   if(modalMode==='create')nextCode=await createScene(pin);
+   else if(modalMode==='legacy')await setLegacyModerator(nextCode,pin);
+   else await authorizeModerator(nextCode,pin);
+   await enterStudio(nextCode);history.replaceState(null,'',controlURL());
+   const wasCreate=modalMode==='create';
+   modalBusy=false;closeModModal();
+   toast(wasCreate?'Scene created! Keep the mod code private.':'Moderator access unlocked!');
+ }catch(e){console.error(e);$('modError').textContent=e.message||'Cannot unlock scene. Check your code and Firebase permissions.';}
+ finally{modalBusy=false;button.disabled=false;button.textContent=original;}
+};
 $('homeBtn').onclick=()=>{unsubscribe();unsubscribe=()=>{};if(hud){hud.destroy();hud=null;}code=null;scene=null;studio.hidden=true;home.hidden=false;$('homeBtn').hidden=true;history.replaceState(null,'','./index.html');};
 function syncStageScale(){const viewport=$('previewViewport');stageScale=viewport.clientWidth/1920;$('previewStage').style.transform=`scale(${stageScale})`;}
 window.addEventListener('resize',syncStageScale);
@@ -63,4 +103,4 @@ function startDrag(e){if(!scene||e.button!==0)return;e.preventDefault();drag={po
 function moveDrag(e){if(!drag||e.pointerId!==drag.pointerId||!scene)return;const x=digits(drag.x+(e.clientX-drag.startX)/stageScale,0,1900),y=digits(drag.y+(e.clientY-drag.startY)/stageScale,0,1040);scene={...scene,layout:{...scene.layout,x,y}};hud.update(scene);$('positionReadout').textContent=`X: ${x}   Y: ${y}`;}
 async function endDrag(e){if(!drag||e.pointerId!==drag.pointerId)return;hud.node.removeEventListener('pointermove',moveDrag);drag=null;try{await patchScene(code,{'layout/x':scene.layout.x,'layout/y':scene.layout.y});}catch(err){fail(err);}}
 setInterval(()=>{if(scene){const c=getClockValues(scene);$('timerLarge').textContent=fmt(c.total);}},1000);
-if(codeFromUrl.length===12 && cloudReady)sceneExists(codeFromUrl).then(exists=>{if(exists){enterStudio(codeFromUrl);}else{toast('Scene does not exist.',true);}}).catch(fail);
+if(codeFromUrl.length===12 && cloudReady)promptForScene(codeFromUrl).catch(fail);
