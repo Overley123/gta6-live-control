@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c0819"><title>LEONIDA — GTA VI Control Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&family=Rubik:ital,wght@0,700;0,900;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="hud.css"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div><div class="noise"></div>
+  <header class="site-header"><a class="brand" href="./index.html"><span class="brand-icon">VI</span><span><b>LEONIDA</b><small>CONTROL STUDIO</small></span></a><div class="header-right"><span class="online-chip"><span class="status-dot" id="statusDot"></span><span id="statusText">Checking cloud...</span></span><button class="ghost-btn" id="homeBtn" hidden>← All Scenes</button></div></header>
+  <main>
+    <section id="homeView" class="home-view">
+      <div class="intro"><div class="eyebrow"><span class="dash"></span> YOUR STREAM. YOUR RULES. <span class="dash"></span></div><h1>CONTROL YOUR <span class="gradient-text">WORLD.</span></h1><p>Create a GTA VI overlay scene, get a shareable code, and manage it live from any device. No installation. No local server.</p></div>
+      <div class="entry-grid">
+        <div class="glass entry-card first"><div class="card-icon pink-icon">＋</div><div class="card-kicker">START FROM SCRATCH</div><h2>Create a Scene</h2><p>Get your own scene code, live counters, timers and a transparent OBS overlay URL.</p><button class="primary-btn" id="createBtn">CREATE NEW SCENE <span>↗</span></button></div>
+        <div class="glass entry-card"><div class="card-icon cyan-icon">↳</div><div class="card-kicker">ALREADY HAVE A CODE?</div><h2>Join a Scene</h2><p>Enter a scene code to take control of its counters, layout and visual effects.</p><form id="joinForm"><label class="field-label" for="joinCode">SCENE CODE</label><input id="joinCode" type="text" placeholder="ABCDEF-GHJKLM" autocomplete="off" spellcheck="false" maxlength="15" required><button class="secondary-btn" type="submit">JOIN SCENE <span>→</span></button></form></div>
+      </div>
+      <div id="setupNotice" class="setup-notice" hidden><span class="warn-icon">!</span><span><b>Cloud setup is required.</b> The website files are ready, but a Firebase Realtime Database must be configured before scenes can sync across devices. See <code>README.md</code>.</span></div>
+      <div class="home-footer"><span>GTA VI INSPIRED • REAL-TIME SCENE CONTROL</span><span>1920 × 1080 • TRANSPARENT OBS SOURCE</span></div>
+    </section>
+    <section id="studioView" class="studio-view" hidden>
+      <div class="studio-top"><div><div class="overline">LIVE SCENE WORKSPACE</div><h1>Scene <span class="gradient-text">Control.</span></h1><div class="scene-name-row"><span class="green-dot"></span><span id="sceneNameText">GTA VI Stream</span><button class="tiny-btn" id="renameBtn" title="Rename scene">✎</button></div></div><div class="share-section"><div class="share-label">YOUR SCENE CODE <small>Anyone with this code can control the scene</small></div><div class="share-code"><strong id="sceneCodeText">------ ------</strong><button id="copyCodeBtn" class="copy-btn">⧉ COPY</button></div><div class="share-actions"><button class="ghost-btn" id="copyObsBtn">⧉ Copy OBS link</button><button class="ghost-btn" id="openObsBtn">↗ Open overlay</button><button class="ghost-btn" id="copyControlBtn">⧉ Control link</button></div></div></div>
+      <div class="studio-grid">
+        <section class="preview-area glass"><div class="section-bar"><div><div class="overline">LIVE CANVAS</div><h2>Scene Preview <span class="pill">1920 × 1080</span></h2></div><span class="drag-hint">✥ DRAG TO REPOSITION</span></div>
+        <div class="preview-viewport" id="previewViewport"><div class="preview-stage" id="previewStage"><div class="stage-top-line">SAFE AREA <span>1920 × 1080</span></div><div class="stage-center-mark">VI</div><div class="stage-corner tl"></div><div class="stage-corner tr"></div><div class="stage-corner bl"></div><div class="stage-corner br"></div></div></div>
+        <div class="preview-footer"><span class="green-dot"></span><span id="canvasStatus">Connected to cloud</span><span class="preview-spacer"></span><span id="positionReadout">X: 1240 &nbsp; Y: 38</span></div>
+        <div class="quick-controls"><span>QUICK ACTIONS</span><button data-quick="missions" data-delta="1">+ Mission</button><button data-quick="deaths" data-delta="1">+ Death</button><button data-quick="day" data-delta="1">+ Day</button><button data-quick="clock" data-delta="toggle" id="quickToggle">▶ Timer</button></div>
+        </section>
+        <aside class="controls-area glass"><div class="section-bar"><div><div class="overline">COMMAND CENTER</div><h2>Live Controls</h2></div><span class="control-badge">● LIVE</span></div>
+          <nav class="tab-list" aria-label="Control categories"><button class="tab active" data-tab="stats">◫ STATS</button><button class="tab" data-tab="clock">◷ TIME</button><button class="tab" data-tab="look">✦ STYLE</button></nav>
+          <div class="tab-panel" id="statsPanel"><p class="panel-intro">Update counters instantly across all connected screens.</p>
+            <div class="counter-card"><div class="counter-name"><span class="counter-icon amber">◷</span><div><b>DAY</b><small>Current in-game day</small></div></div><div class="counter-actions"><button data-step="day:-1" aria-label="Decrease day">−</button><input data-stat="day" type="number" min="1" max="99999" value="1"><button data-step="day:1" aria-label="Increase day">+</button></div></div>
+            <div class="counter-card"><div class="counter-name"><span class="counter-icon pink">✓</span><div><b>MISSIONS</b><small>Completed missions</small></div></div><div class="counter-actions"><button data-step="missions:-1" aria-label="Decrease missions">−</button><input data-stat="missions" type="number" min="0" max="999999" value="0"><button data-step="missions:1" aria-label="Increase missions">+</button></div></div>
+            <div class="counter-card"><div class="counter-name"><span class="counter-icon red">☠</span><div><b>DEATHS</b><small>Total death count</small></div></div><div class="counter-actions"><button data-step="deaths:-1" aria-label="Decrease deaths">−</button><input data-stat="deaths" type="number" min="0" max="999999" value="0"><button data-step="deaths:1" aria-label="Increase deaths">+</button></div></div>
+            <button class="danger-outline" id="resetStatsBtn">↻ Reset all counters</button>
+          </div>
+          <div class="tab-panel" id="clockPanel" hidden><p class="panel-intro">Timer runs in the cloud: no browser needs to stay open.</p><div class="timer-readout"><div>PLAY TIME</div><strong id="timerLarge">0:00:00</strong><span id="timerStateText">PAUSED</span></div><button class="primary-btn block" id="timerToggleBtn">▶ START TIMER</button><div class="time-field"><label for="totalInput">TOTAL PLAY TIME (H:MM:SS)</label><div><input id="totalInput" placeholder="0:00:00"><button id="setTotalBtn">SET</button></div></div><div class="time-field"><label for="todayInput">TODAY'S TIME (H:MM:SS)</label><div><input id="todayInput" placeholder="0:00:00"><button id="setTodayBtn">SET</button></div></div><button class="danger-outline" id="resetTodayBtn">↻ Reset today's timer</button><button class="danger-outline" id="resetAllBtn">↻ Reset all timers and counters</button></div>
+          <div class="tab-panel" id="lookPanel" hidden><p class="panel-intro">Customize the 1920 × 1080 overlay without editing code.</p>
+            <div class="field-row"><label for="xInput">X POSITION</label><input type="number" id="xInput" min="0" max="1900"></div><div class="field-row"><label for="yInput">Y POSITION</label><input type="number" id="yInput" min="0" max="1040"></div>
+            <div class="range-row"><label for="scaleRange">HUD SIZE <strong id="scaleValue">100%</strong></label><input type="range" id="scaleRange" min="35" max="240" value="100"></div><div class="range-row"><label for="opacityRange">OPACITY <strong id="opacityValue">100%</strong></label><input type="range" id="opacityRange" min="10" max="100" value="100"></div>
+            <div class="subheading">VISIBLE ELEMENTS</div><div class="toggle-grid"><label><input type="checkbox" data-visibility="day" checked><span>Day</span></label><label><input type="checkbox" data-visibility="timer" checked><span>Timer</span></label><label><input type="checkbox" data-visibility="missions" checked><span>Missions</span></label><label><input type="checkbox" data-visibility="deaths" checked><span>Deaths</span></label></div>
+            <div class="subheading">NEON COLORS</div><div class="colors-grid"><label>Pink<input type="color" data-color="pink" value="#ff2a85"></label><label>Cyan<input type="color" data-color="cyan" value="#00f5d4"></label><label>Amber<input type="color" data-color="amber" value="#ff9e00"></label><label>Red<input type="color" data-color="red" value="#ff4d6d"></label></div>
+            <div class="subheading">HEBREW OVERLAY LABELS</div><div class="labels-grid"><label>Day<input type="text" data-label="day" maxlength="24"></label><label>Timer<input type="text" data-label="time" maxlength="24"></label><label>Missions<input type="text" data-label="missions" maxlength="24"></label><label>Deaths<input type="text" data-label="deaths" maxlength="24"></label></div>
+            <button class="secondary-btn block" id="resetStyleBtn">↺ RESET APPEARANCE</button>
+          </div>
+        </aside>
+      </div>
+      <div class="tip-banner"><b>OBS TIP:</b> Add a Browser Source with the copied OBS link. Set its width to <strong>1920</strong> and height to <strong>1080</strong>. The background stays transparent.</div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script type="module" src="studio.js"></script>
+</body></html>
