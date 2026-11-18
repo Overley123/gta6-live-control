@@ -1,5 +1,5 @@
-import { cloudReady, initCloud, normalizeCode, watchScene } from './cloud.js?v=20261118-configured';
-import { makeHud } from './hud.js';
+import { cloudReady, initCloud, normalizeCode, watchScene } from './cloud.js?v=mods2';
+import { makeHud } from './hud.js?v=mods2';
 const stage=document.getElementById('stage');
 const diagnostic=document.getElementById('diagnostic');
 const code=normalizeCode(new URLSearchParams(location.search).get('scene'));
